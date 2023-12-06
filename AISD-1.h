@@ -8,25 +8,40 @@
 #include <random>
 #include <complex>
 
-
-
 template <typename T>
 class Vector {
 	int _dimension;
 	T* _values;
 public:
-	int getDimension() {
+	int getDimension() const{
 		return _dimension;
 	}
 
-	int vectorModule() {
-		T sum;
+	double vectorModule() const{
+		T sum = 0;
 		for (int i = 0; i < _dimension; i++) {
 			T x = _values[i];
-			sum += x * x;
+			sum += (x * x);
 		}
 		return sqrt(sum);
 	}
+
+	Vector(const Vector& v) {
+		_dimension = v._dimension;
+		_values = new T[_dimension];
+		for (int i = 0; i < _dimension; i++) {
+			_values[i] = v._values[i];
+		}
+	}
+
+	Vector& operator=(const Vector& v) {
+		for (int i = 0; i < _dimension; i++) {
+			_values[i] = v._values[i];
+		}
+		return *this;
+	}
+	
+	Vector() = delete;
 
 	Vector(int dimension) {
 		_dimension = dimension;
@@ -43,6 +58,7 @@ public:
 			_values[i] = values[i];
 		}
 	}
+
 	Vector(int dimension, double minValue, double maxValue) { 
 		random_device rd;
 		mt19937 e{ rd() }; // or std::default_random_engine e{rd()};
@@ -56,12 +72,13 @@ public:
 	}
 	
 	~Vector() {
-		delete(_values);
+		delete[] _values;
 	}
 
 	T& operator[](int i) {
 		return _values[i];
 	}
+
 	const T& operator[](int i) const {
 		return _values[i];
 	}
@@ -80,6 +97,7 @@ public:
 			throw invalid_argument("Vectors have diffrent dimensions");
 		}
 	}
+
 	Vector operator-(const Vector& rhs) const {
 		if (_dimension == rhs._dimension)
 		{
@@ -94,10 +112,11 @@ public:
 			throw invalid_argument("Vectors have diffrent dimensions");
 		}
 	}
+
 	T operator*(const Vector& rhs) const {
 		if (_dimension == rhs._dimension)
 		{
-			T sum;
+			T sum = 0;
 			for (int i = 0; i < _dimension; i++) {
 				sum += _values[i] * rhs[i];
 			}
@@ -108,22 +127,41 @@ public:
 			throw invalid_argument("Vectors have diffrent dimensions");
 		}
 	}
-	Vector operator/(const Vector& rhs) const {
 
-	}
-
-	Vector operator+(const T& rhs) const {
-
-	}
-	Vector operator-(const T& rhs) const {
-
-	}
 	Vector operator*(const T& rhs) const {
-
+		Vector v = Vector(*this);
+		for (int i = 0; i < _dimension; i++) {
+			v._values[i] *= rhs;
+		}
+		return v;
 	}
+
+	friend Vector operator*(const float& lhs, const Vector& rhs) {
+		Vector v = Vector(rhs);
+		for (int i = 0; i < v._dimension; i++) {
+			v._values[i] *= lhs;
+		}
+		return v;
+	}
+
 	Vector operator/(const T& rhs) const {
+		Vector v = Vector(this);
+		for (int i = 0; i < _dimension; i++) {
+			v._values[i] /= rhs;
+		}
+		return v;
+	}
+
+	/*
+	Vector operator/(const Vector& rhs) const {
+		return  (*this) * (1 / rhs);
+	}
+	Vector operator+(const double& rhs) const {
 
 	}
-};
+	Vector operator-(const double& rhs) const {
 
-// TODO: установите здесь ссылки на дополнительные заголовки, требующиеся для программы.
+	}
+	*/
+	
+};
