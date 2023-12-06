@@ -57,7 +57,7 @@ ostream& operator<<(ostream& os, const Vector<T>& v) {
 	os << "( ";
 	int dimension = v.getDimension();
 	for (int i = 0; i < dimension; i++) {
-		os << v[0] << "; ";
+		os << v[i] << "; ";
 	}
 	return os << ")";
 }
